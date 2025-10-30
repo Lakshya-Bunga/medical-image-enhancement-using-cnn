@@ -9,6 +9,8 @@ from tensorflow.keras.models import load_model
 from PIL import Image
 from io import BytesIO
 import base64
+from PIL import ImageEnhance, ImageFilter
+import gdown, os
 
 # --------------------- Page Setup --------------------------
 st.set_page_config(page_title="Medical Image Enhancement", page_icon="🧠")
@@ -16,7 +18,6 @@ st.title("🧠 Medical Image Enhancement Using CNN")
 st.write("Upload a **MRI or CT** image (JPG/PNG) and get a enhanced version!")
 
 # --------------------- Load Model (from Google Drive) ---------------------
-import gdown, os
 
 @st.cache_resource
 def load_unet_model():
@@ -62,6 +63,11 @@ if uploaded is not None:
     with st.spinner("🧠 Enhancing... please wait"):
         denoised_pred = model.predict(x, verbose=0)
     denoised_img = postprocess(denoised_pred)
+    # Slight contrast enhancement (try 1.1–1.5 range)
+    enhancer = ImageEnhance.Contrast(denoised_img)
+    denoised_img = enhancer.enhance(1.25)
+    # Optional: light sharpening filter
+    denoised_img = denoised_img.filter(ImageFilter.UnsharpMask(radius=1, percent=120, threshold=3))
 
     # Show comparison
     col1, col2 = st.columns(2)
