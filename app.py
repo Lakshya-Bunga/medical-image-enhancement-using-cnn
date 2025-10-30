@@ -24,7 +24,7 @@ def load_unet_model():
     if not os.path.exists(model_path):
         st.info("⬇️ Downloading model from Google Drive...")
         # Replace the file ID below with your actual ID
-        file_id = "1AbCdEFGhIJklmnopQRsTuvWXyz"
+        file_id = "1as2zbZ9yc3O341lqQU9h-Ks8GMGQhQYp"
         url = f"https://drive.google.com/uc?id={file_id}"
         gdown.download(url, model_path, quiet=False)
     model = load_model(model_path, compile=False)
