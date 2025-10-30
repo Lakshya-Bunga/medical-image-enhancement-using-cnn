@@ -2,6 +2,8 @@
 # app.py — Streamlit App for MRI/CT Denoising using U-Net CNN
 # ============================================================
 
+import cv2
+import tempfile
 import streamlit as st
 import numpy as np
 import tensorflow as tf
@@ -37,12 +39,25 @@ st.success("✅ Model loaded successfully!")
 
 # --------------------- Helper Functions ---------------------
 def preprocess_image(uploaded_file, size=(128, 128)):
-    """Convert uploaded image to grayscale, resize, normalize to [0,1]."""
-    img = Image.open(uploaded_file).convert('L')
-    img = img.resize(size)
-    arr = np.array(img).astype(np.float32) / 255.0
-    arr = np.expand_dims(arr, axis=(0, -1))  # shape (1, 128,128,1)
-    return arr, img
+    """Preprocess uploaded image using OpenCV (matches Colab preprocessing)."""
+    # Save uploaded image temporarily so OpenCV can read it
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        tmp_path = tmp_file.name
+
+    # Read using OpenCV (grayscale)
+    img = cv2.imread(tmp_path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
+
+    # Normalize to [0,1]
+    arr = img.astype(np.float32) / 255.0
+    arr = np.expand_dims(arr, axis=(0, -1))  # shape (1,128,128,1)
+
+    # Convert back to PIL for display
+    pil_img = Image.fromarray(img)
+
+    return arr, pil_img
+    
 
 def postprocess(pred):
     """Convert predicted [0,1] float image to 8-bit PIL image."""
