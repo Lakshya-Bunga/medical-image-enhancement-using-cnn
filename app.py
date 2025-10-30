@@ -11,9 +11,9 @@ from io import BytesIO
 import base64
 
 # --------------------- Page Setup --------------------------
-st.set_page_config(page_title="Medical Image Denoising", page_icon="🧠")
-st.title("🧠 Medical Image Denoising using CNN (U-Net Autoencoder)")
-st.write("Upload a noisy **MRI or CT** image (JPG/PNG) and get a denoised version!")
+st.set_page_config(page_title="Medical Image Enhancement", page_icon="🧠")
+st.title("🧠 Medical Image Enhancement Using CNN")
+st.write("Upload a **MRI or CT** image (JPG/PNG) and get a enhanced version!")
 
 # --------------------- Load Model (from Google Drive) ---------------------
 import gdown, os
@@ -59,7 +59,7 @@ if uploaded is not None:
     st.image(display_img, caption="Uploaded (Preprocessed)", use_container_width=True)
 
     # Predict
-    with st.spinner("🧠 Denoising... please wait"):
+    with st.spinner("🧠 Enhancing... please wait"):
         denoised_pred = model.predict(x, verbose=0)
     denoised_img = postprocess(denoised_pred)
 
@@ -68,12 +68,12 @@ if uploaded is not None:
     with col1:
         st.image(display_img, caption="Noisy Input", use_container_width=True)
     with col2:
-        st.image(denoised_img, caption="Denoised Output", use_container_width=True)
+        st.image(denoised_img, caption="Enhanced reconstructed Output", use_container_width=True)
 
     # Download option
     buf = BytesIO()
     denoised_img.save(buf, format="PNG")
-    st.download_button("📥 Download Denoised Image", buf.getvalue(), "denoised_image.png")
+    st.download_button("📥 Download Enhanced Medical Image", buf.getvalue(), "denoised_image.png")
 
 else:
-    st.info("👆 Upload an MRI or CT image above to begin denoising.")
+    st.info("👆 Upload an MRI or CT image above to begin.")
